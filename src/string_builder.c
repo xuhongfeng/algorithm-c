@@ -81,7 +81,9 @@ void checkCapacity(StringBuilder* sb, int delta) {
     free(oldBuf);
 }
 
-int test() {
+/*************  test ******************/
+
+int sb_test() {
     StringBuilder* sb = newStringBuilder();
     stringBuilderAppend(sb, "hello world");
     stringBuilderAppendChar(sb, '!');
@@ -92,8 +94,4 @@ int test() {
     free(str);
 
     return 0;
-}
-
-int main() {
-    return test();
 }
