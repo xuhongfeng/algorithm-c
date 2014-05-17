@@ -12,9 +12,16 @@
 #include "string_builder.h"
 #include "utils.h"
 
+/* -------------------------- private prototypes ---------------------------- */
+
 ListNode* _newListNode(void *value);
+
 /* initialize the given list with one node */
 void _initList(List *list, ListNode *node);
+
+
+
+/* ----------------------------- API implementation ------------------------- */
 
 List *newList() {
     List *list = (List*)malloc(sizeof(List));
@@ -29,15 +36,16 @@ List *newList() {
 void freeList(List *list) {
     ListIterator *iter = listGetIterator(list, DIRECT_BACKWARD);
     while (listIterHasNext(iter)) {
-        ListNode* node = listIteratorNext(iter);
+        ListNode* node = iter->next;
+        listIteratorNext(iter);
         freeListNode(list, node);
     }
     free(list);
 }
 
-void freeListNode(List* list, ListNode *node) {
-//    list->free(node->value);
-//    free(node);
+void freeListNode(List *list, ListNode *node) {
+    list->free(node->value);
+    free(node);
 }
 
 void listPush(List *list, void *value) {
@@ -96,19 +104,6 @@ void* listUnshift(List *list) {
     return value;
 }
 
-/*************  private ******************/
-ListNode* _newListNode(void *value) {
-    ListNode *node = (ListNode*)malloc(sizeof(ListNode));
-    node->prev = node->next = NULL;
-    node->value = value;
-    return node;
-}
-
-void _initList(List *list, ListNode *node) {
-    list->head = list->tail = node;
-    list->len = 1;
-}
-
 ListIterator *listGetIterator(List *list, int direction) {
     ListIterator *iter = (ListIterator*)malloc(sizeof(ListIterator));
     iter->next = list->head;
@@ -126,7 +121,20 @@ void* listIteratorNext(ListIterator *iter) {
     return value;
 }
 
-/*************  test ******************/
+/* -------------------------- private implementation ---------------------------- */
+ListNode* _newListNode(void *value) {
+    ListNode *node = (ListNode*)malloc(sizeof(ListNode));
+    node->prev = node->next = NULL;
+    node->value = value;
+    return node;
+}
+
+void _initList(List *list, ListNode *node) {
+    list->head = list->tail = node;
+    list->len = 1;
+}
+
+/* -------------------------- test ---------------------------- */
 
 typedef struct People {
     char *name;
@@ -164,6 +172,7 @@ int main() {
     People *p = (People*) malloc(sizeof(People));
     p->id = 1;
     p->name = mallocString("bob");
+
     listPush(list, p);
 
     p = (People*) malloc(sizeof(People));
