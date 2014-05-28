@@ -1,4 +1,4 @@
 algorithm-c
 ===========
 
-algorithm code in c language, for leaning purpose.
+algorithm code in c language, for learning purpose.

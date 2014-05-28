@@ -163,7 +163,7 @@ int peopleMatch(People *p1, People *p2) {
     return p1->id == p2->id;
 }
 
-int main() {
+int testList() {
     List* list = newList();
     list->dup = peopleDup;
     list->match = peopleMatch;
