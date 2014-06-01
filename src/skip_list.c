@@ -130,6 +130,37 @@ SkipNode* slIteratorNext(SkipListIterator *iterator) {
     return iterator->current;
 }
 
+void slDelete(SkipList *list, int key) {
+    SkipNode *update[SKIP_LIST_MAX_LEVEL];
+    int i;
+    SkipNode *p, *found = NULL;
+
+    p = list->head;
+    for (i=list->level-1; i>=0; i--) {
+        update[i] = NULL;
+        while (p->levels[i] != NULL) {
+            if (p->levels[i]->key == key) {
+                update[i] = p;
+                found = p->levels[i];
+                break;
+            } else if (p->levels[i]->key < key) {
+                p = p->levels[i];
+            } else {
+                break;
+            }
+        }
+    }
+    if (found != NULL) {
+        for (i=list->level-1; i>=0; i--) {
+            if (update[i] != NULL) {
+                update[i]->levels[i] = found->levels[i];
+            }
+        }
+        free(found);
+        list->size--;
+    }
+}
+
 /********************  PRIVATE ************************/
 static int _random_level() {
     int level=1;
@@ -175,6 +206,13 @@ int main() {
     }
     assert(slIteratorNext(iterator) == NULL);
     freeSkipListIterator(iterator);
+
+    // test delete
+    slDelete(list, 5);
+    assert(list->size == 9);
+    assert(slGet(list, 5) == -1);
+    slDelete(list, 5);
+    assert(list->size == 9);
 
     freeSkipList(list);
 

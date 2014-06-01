@@ -36,6 +36,7 @@ void freeSkipList(SkipList *list);
 
 void slInsert(SkipList *list, int key, int value);
 int slGet(SkipList *list, int key);
+void slDelete(SkipList *list, int key);
 
 SkipListIterator *slGetIterator(SkipList *list);
 SkipNode* slIteratorNext(SkipListIterator *iterator);
