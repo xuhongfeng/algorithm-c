@@ -263,7 +263,7 @@ static int _key_index(DictHashTable *ht, int key) {
 
 /***************************  TEST  ******************************/
 
-int main() {
+int _testDict() {
     Dict *dict;
     DictHashTable *ht;
     int i;
