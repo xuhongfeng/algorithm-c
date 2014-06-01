@@ -29,4 +29,7 @@ void freeSkipNode(SkipNode *node);
 SkipList *createSkipList();
 void freeSkipList(SkipList *list);
 
+void slInsert(SkipList *list, int key, int value);
+int slGet(SkipList *list, int key);
+
 #endif /* SKIP_LIST_H_ */
