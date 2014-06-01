@@ -32,6 +32,12 @@ typedef struct Dict {
     int rehashIndex;
 } Dict;
 
+typedef struct DictIterator {
+    Dict *dict;
+    int table, index;
+    DictEntry *current;
+} DictIterator;
+
 /***************************  API ******************************/
 
 Dict *dictCreate();
@@ -40,6 +46,10 @@ void dictPut(Dict *dict, int key, int value);
 int dictGet(Dict *dict, int key);
 void dictDelete(Dict *dict, int key);
 int dictSize(Dict *dict);
+
+DictIterator *dictGetIterator(Dict *dict);
+void dictFreeIterator(DictIterator *iterator);
+DictEntry *dictIteratorNext(DictIterator *iterator);
 
 void freeDict(Dict *dict);
 

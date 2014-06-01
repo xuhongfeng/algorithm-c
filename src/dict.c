@@ -127,6 +127,44 @@ void dictDelete(Dict *dict, int key) {
     }
 }
 
+DictIterator *dictGetIterator(Dict *dict) {
+    DictIterator *iterator = (DictIterator*) malloc(sizeof(DictIterator));
+    iterator->dict = dict;
+    iterator->table = 0;
+    iterator->index = -1;
+    iterator->current = NULL;
+    return iterator;
+}
+
+void dictFreeIterator(DictIterator *iterator) {
+    free(iterator);
+}
+
+DictEntry *dictIteratorNext(DictIterator *iterator) {
+    DictHashTable *ht;
+    while (1) {
+        if (iterator->current) {
+            iterator->current = iterator->current->next;
+        } else {
+            ht = &(iterator->dict->hashTable[iterator->table]);
+            if (iterator->index+1 < ht->size) {
+                iterator->current = ht->table[++iterator->index];
+            } else if (iterator->table == 0 && _is_rehashing(iterator->dict)) {
+                iterator->index = -1;
+                iterator->table = 1;
+            } else {
+                break;
+            }
+        }
+
+        if (iterator->current) {
+            return iterator->current;
+        }
+    }
+
+    return NULL;
+}
+
 /******************  PRIVATE IMPLEMENTATION **********************/
 
 static void _initDict(Dict *dict) {
@@ -230,6 +268,7 @@ int main() {
     DictHashTable *ht;
     int i;
     DictEntry *p, *q;
+    DictIterator *iterator;
 
     //test create and free
     dict = dictCreate();
@@ -288,6 +327,19 @@ int main() {
     dictDelete(dict, 1);
     assert(dictSize(dict) == 2);
     assert(dictGet(dict, 1) == -1);
+
+    //test iterator
+    freeDict(dict);
+    dict = dictCreate();
+    dictPut(dict, 1, 1);
+    dictPut(dict, 2, 2);
+    dictPut(dict, 3, 3);
+    iterator = dictGetIterator(dict);
+    assert(dictIteratorNext(iterator)->value == 2);
+    assert(dictIteratorNext(iterator)->value == 3);
+    assert(dictIteratorNext(iterator)->value == 1);
+    assert(dictIteratorNext(iterator) == NULL);
+    dictFreeIterator(iterator);
 
     printf("test pass\n");
 
