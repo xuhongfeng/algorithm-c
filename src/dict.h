@@ -38,6 +38,7 @@ Dict *dictCreate();
 
 void dictPut(Dict *dict, int key, int value);
 int dictGet(Dict *dict, int key);
+void dictDelete(Dict *dict, int key);
 int dictSize(Dict *dict);
 
 void freeDict(Dict *dict);

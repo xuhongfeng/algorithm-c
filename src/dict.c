@@ -67,8 +67,64 @@ int dictSize(Dict *dict) {
 }
 
 int dictGet(Dict *dict, int key) {
-    //TODO
-    return 0;
+    int i, idx;
+    DictHashTable *ht;
+    DictEntry *p;
+
+    if (_is_rehashing(dict)) {
+        _do_rehash(dict, 1);
+    }
+
+    for (i=0; i<2; i++) {
+        ht = &(dict->hashTable[i]);
+        idx = _key_index(ht, key);
+        p = ht->table[idx];
+        while (p != NULL) {
+            if (p->key == key) {
+                return p->value;
+            }
+            p = p->next;
+        }
+        if (!_is_rehashing(dict)) {
+            break;
+        }
+    }
+    return -1;
+}
+
+void dictDelete(Dict *dict, int key) {
+    int i, idx;
+    int flagFound = 0;
+    DictHashTable *ht;
+    DictEntry *p, *q;
+
+    if (_is_rehashing(dict)) {
+        _do_rehash(dict, 1);
+    }
+
+    for (i=0; i<2; i++) {
+        ht = &(dict->hashTable[i]);
+        idx = _key_index(ht, key);
+        p = ht->table[idx];
+        while (p != NULL) {
+            if (p->key == key) {
+                if (ht->table[idx] == p) {
+                    ht->table[idx] = p->next;
+                } else {
+                    q->next = p->next;
+                }
+                free(p);
+                ht->used--;
+                flagFound = 1;
+                break;
+            }
+            q = p;
+            p = p->next;
+        }
+        if (!_is_rehashing(dict) || flagFound) {
+            break;
+        }
+    }
 }
 
 /******************  PRIVATE IMPLEMENTATION **********************/
@@ -218,13 +274,20 @@ int main() {
     assert(dict->hashTable[0].table[2]->key == 2);
     assert(dict->hashTable[0].table[6]->key == 6);
 
-    //test put
+    //test put get delete
     freeDict(dict);
     dict = dictCreate();
     dictPut(dict, 1, 1);
     dictPut(dict, 2, 2);
     dictPut(dict, 3, 3);
     assert(dictSize(dict) == 3);
+    assert(dictGet(dict, 1) == 1);
+    assert(dictGet(dict, 2) == 2);
+    assert(dictGet(dict, 3) == 3);
+    assert(dictGet(dict, 4) == -1);
+    dictDelete(dict, 1);
+    assert(dictSize(dict) == 2);
+    assert(dictGet(dict, 1) == -1);
 
     printf("test pass\n");
 
