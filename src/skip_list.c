@@ -111,6 +111,25 @@ int slGet(SkipList *list, int key) {
     return -1;
 }
 
+SkipListIterator *slGetIterator(SkipList *list) {
+    SkipListIterator *iterator = (SkipListIterator*) malloc(sizeof(SkipListIterator));
+    iterator->list = list;
+    iterator->current = list->head;
+    return iterator;
+}
+
+void freeSkipListIterator(SkipListIterator *iterator) {
+    free(iterator);
+}
+
+SkipNode* slIteratorNext(SkipListIterator *iterator) {
+    if (iterator->list->size == 0 || iterator->current->levels[0] == NULL) {
+        return NULL;
+    }
+    iterator->current = iterator->current->levels[0];
+    return iterator->current;
+}
+
 /********************  PRIVATE ************************/
 static int _random_level() {
     int level=1;
@@ -124,6 +143,8 @@ static int _random_level() {
 int main() {
     SkipList *list;
     SkipNode *p;
+    SkipListIterator *iterator;
+    int i;
 
     // test create and free
     p = createSkipNode();
@@ -145,6 +166,17 @@ int main() {
     slInsert(list, 10, 10);
     assert(slGet(list, 10) == 10);
     assert(slGet(list, 11) == -1);
+
+
+    // test iterator
+    iterator = slGetIterator(list);
+    for (i=0; i<10; i++) {
+        assert(slIteratorNext(iterator)->value == i+1);
+    }
+    assert(slIteratorNext(iterator) == NULL);
+    freeSkipListIterator(iterator);
+
+    freeSkipList(list);
 
     printf("test pass\n");
 }

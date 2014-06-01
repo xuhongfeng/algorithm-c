@@ -21,6 +21,11 @@ typedef struct SkipList {
     int level;
 } SkipList;
 
+typedef struct SkipListIterator {
+    SkipList *list;
+    SkipNode *current;
+} SkipListIterator;
+
 /*******************  API  *************************/
 
 SkipNode *createSkipNode();
@@ -31,5 +36,9 @@ void freeSkipList(SkipList *list);
 
 void slInsert(SkipList *list, int key, int value);
 int slGet(SkipList *list, int key);
+
+SkipListIterator *slGetIterator(SkipList *list);
+SkipNode* slIteratorNext(SkipListIterator *iterator);
+void freeSkipListIterator(SkipListIterator *iterator);
 
 #endif /* SKIP_LIST_H_ */
