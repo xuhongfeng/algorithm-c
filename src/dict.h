@@ -8,39 +8,37 @@
 #ifndef DICT_H_
 #define DICT_H_
 
-typedef struct DictType {
-    unsigned int (*hashFunction) (const void *key);
-    void* (*keyDup) (const void *key);
-    void* (*valueDup) (const void *value);
-    int (*keyCompare) (const void *k1, const void *k2);
-    void (*freeKey) (void *key);
-    void (*freeValue) (void *value);
-} DictType;
+/***************************  macro ******************************/
+#define DICT_OK 0
+#define DICT_ERR 1
+
+/***************************  struct ******************************/
 
 typedef struct DictEntry {
-    void* key;
-    void* value;
+    int key;
+    int value;
     struct DictEntry* next;
 } DictEntry;
 
 typedef struct DictHashTable {
     DictEntry ** table;
-    unsigned long size;
-    unsigned long sizeMask;
-    unsigned long used;
+    int size;
+    int sizeMask;
+    int used;
 } DictHashTable;
 
 typedef struct Dict {
-    DictType* type;
     DictHashTable hashTable[2];
+    int rehashIndex;
 } Dict;
-
 
 /***************************  API ******************************/
 
-DictType *dictCreateType();
+Dict *dictCreate();
 
-Dict *dictCreate(DictType *type);
+void dictPut(Dict *dict, int key, int value);
+int dictGet(Dict *dict, int key);
+int dictSize(Dict *dict);
 
 void freeDict(Dict *dict);
 
