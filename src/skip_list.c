@@ -44,7 +44,7 @@ void freeSkipList(SkipList *list) {
 
     while (p) {
         q = p->levels[0];
-        free(p);
+        freeSkipNode(p);
         p = q;
     }
 
