@@ -171,7 +171,7 @@ static int _random_level() {
 }
 
 /**********************  test  **************************/
-int main() {
+int testSkipList() {
     SkipList *list;
     SkipNode *p;
     SkipListIterator *iterator;
